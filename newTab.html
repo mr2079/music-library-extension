@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <title>Music Library</title>
+    <link rel="icon" href="music-library.ico" type="image/x-icon" />
+    <link
+      href="https://fonts.googleapis.com/css?family=Roboto&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+      integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link rel="stylesheet" href="newTab.css" media="all" />
+  </head>
+  <body>
+    <audio id="myAudio" ontimeupdate="onTimeUpdate()">
+      <source id="source-audio" src="" type="audio/mpeg" />
+      Your browser does not support the audio element.
+    </audio>
+
+    <div class="search-container">
+      <input type="text" id="search-bar" placeholder="Search..." />
+      <button id="search-button">Search</button>
+    </div>
+
+    <div class="player-ctn">
+      <div class="infos-ctn">
+        <div class="timer">00:00</div>
+        <div class="title"></div>
+        <div class="duration">00:00</div>
+      </div>
+      <div id="myProgress">
+        <div id="myBar"></div>
+      </div>
+      <div class="btn-ctn">
+        <div class="btn-action first-btn" id="previous">
+          <div id="btn-faws-back">
+            <i class="fas fa-step-backward"></i>
+          </div>
+        </div>
+        <div class="btn-action" id="rewind">
+          <div id="btn-faws-rewind">
+            <i class="fas fa-backward"></i>
+          </div>
+        </div>
+        <div class="btn-action" id="toggleAudio">
+          <div id="btn-faws-play-pause">
+            <i class="fas fa-play" id="icon-play"></i>
+            <i class="fas fa-pause" id="icon-pause" style="display: none"></i>
+          </div>
+        </div>
+        <div class="btn-action btn-play" id="forward">
+          <div id="btn-faws-forward">
+            <i class="fas fa-forward"></i>
+          </div>
+        </div>
+        <div class="btn-action" id="next">
+          <div id="btn-faws-next">
+            <i class="fas fa-step-forward"></i>
+          </div>
+        </div>
+        <div class="btn-action btn-mute" id="toggleMute">
+          <div id="btn-faws-volume">
+            <i id="icon-vol-up" class="fas fa-volume-up"></i>
+            <i
+              id="icon-vol-mute"
+              class="fas fa-volume-mute"
+              style="display: none"
+            ></i>
+          </div>
+        </div>
+      </div>
+      <div class="playlist-ctn"></div>
+    </div>
+    <script src="newTab.js"></script>
+  </body>
+</html>
