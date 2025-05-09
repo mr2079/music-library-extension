@@ -222,21 +222,19 @@ function toggleMute() {
   volMute.style.display = currentAudio.muted ? "block" : "none";
 }
 
+const searchContainer = document.querySelector(".search-container");
+const searchInput = document.getElementById("search-bar");
+
 function performSearch(query) {
-  const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
-  window.open(searchUrl, '_blank');
+  const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(
+    query
+  )}`;
+  window.open(searchUrl, "_blank");
 }
 
-document.getElementById("search-button").addEventListener("click", () => {
-  const query = document.getElementById("search-bar").value;
-  if (query.trim()) {
-    performSearch(query);
-  }
-});
-
-document.getElementById("search-bar").addEventListener("keydown", (event) => {
+searchInput.addEventListener("keydown", (event) => {
   if (event.key === "Enter") {
-    const query = document.getElementById("search-bar").value;
+    const query = searchInput.value;
     if (query.trim()) {
       performSearch(query);
     }
@@ -244,10 +242,57 @@ document.getElementById("search-bar").addEventListener("keydown", (event) => {
 });
 
 document.addEventListener("keydown", (event) => {
-  const searchInput = document.getElementById("search-bar");
   if (event.key === "/" && document.activeElement !== searchInput) {
     event.preventDefault();
     searchInput.focus();
   }
 });
 
+const suggestionsBox = document.getElementById("suggestions-box");
+let debounceTimer;
+
+searchInput.addEventListener("input", () => {
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(() => {
+    const query = searchInput.value.trim();
+    if (query.length === 0) {
+      suggestionsBox.innerHTML = "";
+      suggestionsBox.style.display = "none";
+      return;
+    }
+
+    fetch(`http://localhost:3000/suggest/${encodeURIComponent(query)}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && Array.isArray(data.data) && data.data.length > 0) {
+          suggestionsBox.innerHTML = data.data
+            .map(
+              (suggestion) =>
+                `<li style="padding: 5px; cursor: pointer;">${suggestion}</li>`
+            )
+            .join("");
+          suggestionsBox.style.display = "block";
+
+          suggestionsBox.querySelectorAll("li").forEach((li) => {
+            li.addEventListener("click", () => {
+              suggestionsBox.style.display = "none";
+              performSearch(li.textContent);
+            });
+          });
+        } else {
+          suggestionsBox.innerHTML = "";
+          suggestionsBox.style.display = "none";
+        }
+      })
+      .catch(() => {
+        suggestionsBox.innerHTML = "";
+        suggestionsBox.style.display = "none";
+      });
+  }, 500);
+});
+
+document.addEventListener("click", (e) => {
+  if (!searchContainer.contains(e.target)) {
+    suggestionsBox.style.display = "none";
+  }
+});
