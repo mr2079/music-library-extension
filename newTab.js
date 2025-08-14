@@ -11,6 +11,7 @@ const toggleAudioElement = document.querySelector("#toggleAudio");
 const forwardElement = document.querySelector("#forward");
 const nextElement = document.querySelector("#next");
 const toggleMuteElement = document.querySelector("#toggleMute");
+const removeElement = document.querySelector("#remove");
 
 previousElement.addEventListener("click", previous);
 rewindElement.addEventListener("click", rewind);
@@ -18,6 +19,7 @@ toggleAudioElement.addEventListener("click", toggleAudio);
 forwardElement.addEventListener("click", forward);
 nextElement.addEventListener("click", next);
 toggleMuteElement.addEventListener("click", toggleMute);
+removeElement.addEventListener("click", remove);
 
 async function getSavedAudios() {
   return new Promise((resolve) => {
@@ -26,6 +28,12 @@ async function getSavedAudios() {
     });
   });
 }
+
+function replace(input, replace = "") {
+  return input.replace(/\s+/g, replace);
+}
+
+let selectedItems = [];
 
 function createTrackItem(index, name, duration, file) {
   const trackItem = document.createElement("div");
@@ -51,26 +59,35 @@ function createTrackItem(index, name, duration, file) {
   trackDurationItem.className = "playlist-duration";
   trackDurationItem.textContent = duration;
 
-  const removeBtn = document.createElement("button");
-  removeBtn.className = "remove-btn";
-  removeBtn.addEventListener("click", (e) => {
+  const selectBox = document.createElement("input");
+  selectBox.type = "checkbox";
+  selectBox.id = `sb-${replace(name, "_")}`;
+  selectBox.className = "playlist-selectbox";
+  // removeBtn.className = "remove-btn";
+  selectBox.addEventListener("click", (e) => {
     e.stopPropagation();
-    removeAudio(file);
+    // removeAudio(file);
+    if (e.target.checked) {
+      selectedItems.push(file);
+    } else {
+      selectedItems = selectedItems.filter((src) => src != file);
+    }
   });
 
-  const icon = document.createElement("i");
-  icon.className = "fas fa-times";
-  removeBtn.appendChild(icon);
+  // const icon = document.createElement("i");
+  // icon.className = "fas fa-times";
+  // removeBtn.appendChild(icon);
 
-  removeBtn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    removeAudio(file);
-  });
+  // removeBtn.addEventListener("click", (e) => {
+  //   e.stopPropagation();
+  //   removeAudio(file);
+  // });
 
   trackItem.appendChild(playBtnItem);
   trackItem.appendChild(trackInfoItem);
   trackItem.appendChild(trackDurationItem);
-  trackItem.appendChild(removeBtn);
+  // trackItem.appendChild(removeBtn);
+  trackItem.appendChild(selectBox);
 
   trackItem.addEventListener("click", () => {
     if (index === indexAudio) {
@@ -83,9 +100,9 @@ function createTrackItem(index, name, duration, file) {
   playListContainer.appendChild(trackItem);
 }
 
-async function removeAudio(file) {
+async function removeAudios(files) {
   const audios = await getSavedAudios();
-  const updated = audios.filter((src) => src !== file);
+  const updated = audios.filter((src) => !files.includes(src));
   chrome.storage.local.set({ [DB_KEY]: updated }, () => {
     location.reload();
   });
@@ -220,6 +237,12 @@ function toggleMute() {
   currentAudio.muted = !currentAudio.muted;
   volUp.style.display = currentAudio.muted ? "none" : "block";
   volMute.style.display = currentAudio.muted ? "block" : "none";
+}
+
+async function remove() {
+  if (selectedItems) {
+    await removeAudios(selectedItems);
+  }
 }
 
 const searchContainer = document.querySelector(".search-container");

@@ -202,3 +202,38 @@ body {
 #suggestions-box li:hover {
   background-color: #4d4d4d;
 }
+
+/* .playlist-selectbox {
+  width: 25px;
+  margin-right: 20px;
+  margin-left: auto;
+  background-color: #2d2d2d;
+} */
+
+.playlist-selectbox {
+  appearance: none;
+  -webkit-appearance: none;
+  background-color: #eee;
+  border: 2px solid #999;
+  width: 25px;
+  height: 25px;
+  margin: auto;
+  margin-right: 20px;
+  cursor: pointer;
+  border-radius: 4px;
+  position: relative;
+}
+
+.playlist-selectbox:checked {
+  background-color: #ffc266;
+  border-color: #ffc266;
+}
+
+.playlist-selectbox:checked::after {
+  content: "✔";
+  color: black;
+  font-size: 16px;
+  position: absolute;
+  top: 0;
+  left: 5px;
+}
