@@ -93,7 +93,7 @@ function renderModalContent() {
             (src, i) => `
               <li style="margin-bottom: 10px; color: #ffc266; word-break: break-word;">
                 <label style="display: flex; align-items: center; gap: 10px;">
-                  <input type="checkbox" value="${src}" id="checkbox-${i}" />
+                  <input type="checkbox" data-src="${src}" id="checkbox-${i}" />
                   ${decodeURIComponent(src.split("/").pop())}
                 </label>
               </li>`
@@ -128,17 +128,20 @@ function renderModalContent() {
     modal.remove();
   });
 
-  modal.querySelector("#add-audio-selected").addEventListener("click", async () => {
-    const checkedSrcs = Array.from(modal.querySelectorAll("input[type='checkbox']:checked"))
-      .map(input => input.value);
+  modal
+    .querySelector("#add-audio-selected")
+    .addEventListener("click", async () => {
+      const checkedBoxes = modal.querySelectorAll(
+        'input[type="checkbox"]:checked'
+      );
+      const selectedSrcs = Array.from(checkedBoxes).map((cb) => cb.dataset.src);
 
-    for (const src of checkedSrcs) {
-      await addAudio(src);
-    }
+      for (const src of selectedSrcs) {
+        await addAudio(src);
+      }
 
-    modal.remove();
-    location.reload();
-  });
+      modal.remove();
+    });
 }
 
 modalButton.addEventListener("click", () => {
@@ -164,10 +167,6 @@ function collectSrcs() {
 
     if (srcs.length > 0) {
       audioSrcs.push(...srcs);
-      for (const src of audioSrcs) {
-        await addAudio(src);
-      }
-
       if (document.body.contains(modal)) {
         renderModalContent();
       }
