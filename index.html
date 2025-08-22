@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Music Library</title>
+    <link rel="icon" href="music-library.ico" type="image/x-icon" />
+    <script src="tailwindcss.js"></script>
+    <link rel="stylesheet" href="style.css" media="all" />
+  </head>
+  <body class="bg-[#121313] overflow-hidden">
+    <audio id="myAudio" ontimeupdate="onTimeUpdate()">
+      <source id="source-audio" src="" type="audio/mpeg" />
+      Your browser does not support the audio element.
+    </audio>
+
+    <div class="flex flex-col w-full h-screen">
+      <div
+        id="home_section"
+        class="bg-[#121313] w-full flex flex-col items-center flex-1"
+      >
+        <div class="w-full relative flex-1">
+          <div class="w-full h-[250px] flex items-center pl-10">
+            <div
+              class="w-[100%] absolute -ml-[20%] -mt-[220px] h-[100px] bg-gradient-to-br from-[#5629F3]/90 via-[#5629F3]/50 to-black blur-2xl"
+            ></div>
+
+            <div
+              class="w-[200px] h-[200px] shadow-lg shadow-black/20 mt-16 bg-gradient-to-br from-[#4C1BF3] to-white flex items-center justify-center"
+            >
+              <img
+                src="./images/commonicons/hearticon.svg"
+                height="80"
+                width="80"
+                priority="{true}"
+              />
+            </div>
+            <div class="w-auto h-[150px] mt-16 ml-6 flex flex-col justify-end">
+              <h1 class="text-white uppercase text-xs font-bold">
+                Music Library
+              </h1>
+              <h1 class="text-white text-[5.5rem] font-black">Playlist</h1>
+            </div>
+          </div>
+
+          <div class="w-full z-50 pr-16 relative pl-10 h-[calc(100vh-310px)]">
+            <div class="w-full my-[40px] flex justify-start items-center">
+              <div
+                class="w-14 h-14 bg-hover hover:scale-105 rounded-full flex items-center justify-center"
+              >
+                <img
+                  src="./images/commonicons/playicon.svg"
+                  id="collection_playbutton"
+                  alt="play icon green"
+                />
+              </div>
+            </div>
+
+            <div
+              id="playlistCtn"
+              class="w-full flex flex-col overflow-y-auto h-full scrollbar-thin scrollbar-thumb-[#5629F3] scrollbar-track-[#1e1e1e] pb-48"
+            >
+              <div
+                class="w-full h-[30px] border-b px-6 border-b-[#2B2A2B] flex items-center"
+              >
+                <div class="w-[45%] h-full flex">
+                  <span
+                    class="mr-6 text-white text-sm font-book mb-4 opacity-70 w-[45px]"
+                    >#</span
+                  >
+                  <h1 class="text-white text-sm font-book mb-4 opacity-70">
+                    Title
+                  </h1>
+                </div>
+                <div class="w-[28%] h-full flex">
+                  <h1 class="text-white text-sm font-book mb-4 opacity-70">
+                    Album
+                  </h1>
+                </div>
+                <div class="w-[22%] h-full flex">
+                  <h1 class="text-white text-sm font-book mb-4 opacity-70">
+                    Date added
+                  </h1>
+                </div>
+                <div class="w-[10%] h-full flex justify-end">
+                  <h1 class="text-white text-sm font-book mb-4 opacity-70">
+                    Duration
+                  </h1>
+                </div>
+              </div>
+              <!-- Playlist items here -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      id="player_section"
+      class="h-24 z-[100] bg-[#181919] border-t border-t-[#292928] flex w-full fixed bottom-0 left-0"
+    >
+      <div class="hidden">
+        <audio id="player_audio" src=""></audio>
+      </div>
+
+      <div class="w-[30%] md:flex h-full px-6 py-4 hidden">
+        <img
+          src="./images/commonimages/dummy-cover-thumb.png"
+          alt="Cover"
+          class="h-full w-fit"
+        />
+        <div class="w-full h-full flex flex-col justify-center ml-4">
+          <h1
+            id="title"
+            class="text-sm font-book text-white hover:underline cursor-pointer"
+          >
+            Music
+          </h1>
+          <h1 class="text-xs text-[#B2B3B2] mt-1">
+            <span
+              id="artist"
+              class="hover:text-white hover:underline cursor-pointer font-book"
+            >
+              Artist
+            </span>
+            <!-- ,
+            <span
+              class="hover:text-white hover:underline cursor-pointer font-book ml-1"
+            >
+              Hamoud Al Qahtani
+            </span> -->
+          </h1>
+        </div>
+        <div class="w-5 flex items-center">
+          <!-- {isLiked ? (
+            <img
+              onClick={() => setIsLiked(false)}
+              src={HeartIconGreen}
+              alt="Heart Outline Icon"
+              priority={true}
+              class="h-4 cursor-pointer fill-green-500  w-4 "
+            />
+          ) : (
+            <img
+              onClick={() => setIsLiked(true)}
+              src={HeartOutlineIcon}
+              alt="Heart Outline Icon"
+              priority={true}
+              class=" cursor-pointer opacity-70 hover:opacity-100"
+            />
+          )} -->
+        </div>
+      </div>
+      <div class="w-[40%] flex flex-col h-full pl-6 py-4">
+        <div class="h-[65%] w-full flex justify-center items-center">
+          <img
+            src="./images/commonicons/shuffleicon.svg"
+            alt="shuffle"
+            class="opacity-30 hover:opacity-100 mx-3"
+          />
+          <!-- {isShuffle ? (
+            <img
+              onClick={() => setIsShuffle(false)}
+              src={ShuffleIconGreen}
+              alt="shuffle icon green"
+              priority={true}
+              class=" mx-3"
+            />
+          ) : (
+            <img
+              onClick={() => setIsShuffle(true)}
+              src={ShuffleIcon}
+              alt="shuffle icon"
+              priority={true}
+              class="opacity-30 hover:opacity-100 mx-3"
+            />
+          )} -->
+
+          <img
+            id="previous"
+            src="./images/commonicons/previousicon.svg"
+            alt="previous"
+            class="opacity-70 hover:opacity-100 mx-3 cursor-pointer"
+          />
+
+          <div
+            id="toggleAudio"
+            class="bg-white h-8 hover:scale-110 rounded-full w-8 p-2 flex items-center justify-center mx-3 cursor-pointer"
+          >
+            <img
+              id="icon-play"
+              src="./images/commonicons/playicon.svg"
+              alt="play"
+            />
+            <img
+              id="icon-pause"
+              style="display: none;"
+              src="./images/commonicons/pauseicon.svg"
+              alt="pause"
+            />
+          </div>
+
+          <img
+            id="next"
+            src="./images/commonicons/nexticon.svg"
+            alt="next"
+            class="opacity-70 hover:opacity-100 mx-3 cursor-pointer"
+          />
+          <img
+            src="./images/commonicons/repeaticon.svg"
+            alt="repeat"
+            class="opacity-30 hover:opacity-100 mx-3"
+          />
+          <!-- {isRepeat ? (
+            <img
+              onClick={() => setIsRepeat(false)}
+              src={RepeatIconGreen}
+              alt="repeat icon green"
+              priority={true}
+              class=" mx-3"
+            />
+          ) : (
+            <img
+              onClick={() => setIsRepeat(true)}
+              src={RepeatIcon}
+              alt="repeat icon"
+              priority={true}
+              class="opacity-30 hover:opacity-100 mx-3"
+            />
+          )} -->
+        </div>
+        <div class="h-[35%] w-full flex justify-center items-center">
+          <div class="w-[5%] h-full flex items-center justify-center px-2">
+            <p
+              id="current-time"
+              class="font-light text-xs opacity-50 text-white"
+            >
+              0:00
+            </p>
+          </div>
+          <div
+            id="seek_background"
+            class="sm:w-[90%] w-[70%] h-full flex items-center px-2 relative seek cursor-pointer"
+          >
+            <div class="w-full h-[0.22rem] relative bg-[#5F5C5D] rounded-full">
+              <div
+                id="seek_bar"
+                class="h-[0.22rem] absolute seek_bar bg-white rounded-full flex items-center justify-end"
+              >
+                <div
+                  id="seek_bar_dot"
+                  class="w-3 h-3 bg-white rounded-full seek_bar_dot opacity-0 absolute -mr-[5px]"
+                ></div>
+              </div>
+            </div>
+          </div>
+          <div class="w-[5%] h-full flex items-center justify-center px-2">
+            <p id="duration" class="font-light text-xs opacity-50 text-white">
+              0:00
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="w-[30%] flex justify-end h-full px-10 py-4">
+        <img
+          src="./images/commonicons/lyricsicon.svg"
+          alt="lyrics icon"
+          priority="{true}"
+          width="16"
+          height="16"
+          class="mx-2 opacity-50 hover:opacity-100"
+        />
+        <img
+          src="./images/commonicons/queueicon.svg"
+          alt="queue icon"
+          priority="{true}"
+          width="16"
+          height="16"
+          class="mx-2 opacity-50 hover:opacity-100"
+        />
+        <img
+          src="./images/commonicons/sound25icon.svg"
+          id="player_sound_icon"
+          alt="sound icon"
+          width="16"
+          height="16"
+          class="mx-2 opacity-50 hover:opacity-100 player_sound_icon"
+        />
+        <div
+          id="sound_background"
+          class="w-[40%] h-full flex items-center mx-2 relative sound"
+        >
+          <div class="w-full h-[0.30rem] relative bg-[#5F5C5D] rounded-full">
+            <div
+              id="sound_bar"
+              class="w-[100%] h-[0.30rem] absolute sound_bar bg-white rounded-full flex items-center justify-end"
+            >
+              <div
+                class="w-3 h-3 bg-white rounded-full sound_bar_dot opacity-0 absolute -right-25"
+              ></div>
+            </div>
+          </div>
+        </div>
+        <img
+          src="./images/commonicons/fullscreenicon.svg"
+          alt="sound icon"
+          width="16"
+          height="16"
+          class="mx-2 opacity-50 hover:opacity-100"
+        />
+      </div>
+    </div>
+
+    <!-- <div class="search-container">
+      <input type="text" id="search-bar" placeholder="Search Google..." />
+      <ul id="suggestions-box"></ul>
+    </div>
+
+    <div class="player-ctn">
+      <div class="infos-ctn">
+        <div class="timer">00:00</div>
+        <div class="title"></div>
+        <div class="duration">00:00</div>
+      </div>
+      <div id="myProgress">
+        <div id="myBar"></div>
+      </div>
+      <div class="btn-ctn">
+        <div class="btn-action first-btn" id="previous">
+          <div id="btn-faws-back">
+            <i class="fas fa-step-backward"></i>
+          </div>
+        </div>
+        <div class="btn-action" id="rewind">
+          <div id="btn-faws-rewind">
+            <i class="fas fa-backward"></i>
+          </div>
+        </div>
+        <div class="btn-action" id="toggleAudio">
+          <div id="btn-faws-play-pause">
+            <i class="fas fa-play" id="icon-play"></i>
+            <i class="fas fa-pause" id="icon-pause" style="display: none"></i>
+          </div>
+        </div>
+        <div class="btn-action btn-play" id="forward">
+          <div id="btn-faws-forward">
+            <i class="fas fa-forward"></i>
+          </div>
+        </div>
+        <div class="btn-action" id="next">
+          <div id="btn-faws-next">
+            <i class="fas fa-step-forward"></i>
+          </div>
+        </div>
+        <div class="btn-action btn-mute" id="toggleMute">
+          <div id="btn-faws-volume">
+            <i id="icon-vol-up" class="fas fa-volume-up"></i>
+            <i
+              id="icon-vol-mute"
+              class="fas fa-volume-mute"
+              style="display: none"
+            ></i>
+          </div>
+        </div>
+        <div class="btn-action" id="remove">
+          <div id="btn-remove">
+            <i class="fas fa-trash"></i>
+          </div>
+        </div>
+      </div>
+      <div class="playlist-ctn"></div>
+    </div> -->
+    <script src="jsmediatags.min.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
