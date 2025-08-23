@@ -254,6 +254,7 @@ async function renderPlaylist() {
   document.querySelector("#title").textContent =
     tags?.title ?? listAudio[indexAudio].name;
   document.querySelector("#artist").textContent = tags?.artist ?? "Unknown";
+  document.querySelector("#duration").textContent = tags?.duration ?? "0:00";
   document.querySelector("#player-music-cover").src = tags?.cover ?? "./images/commonimages/dummy-cover-thumb.png";
   currentAudio.load();
 }
@@ -268,6 +269,7 @@ async function loadNewTrack(index) {
   document.querySelector("#title").textContent =
     tags?.title ?? listAudio[index].name;
   document.querySelector("#artist").textContent = tags?.artist ?? "Unknown";
+  document.querySelector("#duration").textContent = tags?.duration ?? "0:00";
   document.querySelector("#player-music-cover").src = tags?.cover ?? "./images/commonimages/dummy-cover-thumb.png";
   currentAudio.load();
   toggleAudio();
