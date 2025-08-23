@@ -249,8 +249,12 @@ async function renderPlaylist() {
   );
 
   document.querySelector("#source-audio").src = listAudio[indexAudio].file;
-  const tags = await getMusicTags(listAudio[indexAudio].file);
-  // const tags = null;
+  let tags = null;
+  try {
+    tags = await getMusicTags(listAudio[indexAudio].file);
+  } catch (error) {
+    // ignore
+  }
   document.querySelector("#title").textContent =
     tags?.title ?? listAudio[indexAudio].name;
   document.querySelector("#artist").textContent = tags?.artist ?? "Unknown";
@@ -264,8 +268,12 @@ renderPlaylist();
 async function loadNewTrack(index) {
   currentAudio.pause();
   document.querySelector("#source-audio").src = listAudio[index].file;
-  const tags = await getMusicTags(listAudio[index].file);
-  // const tags = null;
+  let tags = null;
+  try {
+    tags = await getMusicTags(listAudio[index].file);
+  } catch (error) {
+    // ignore
+  }
   document.querySelector("#title").textContent =
     tags?.title ?? listAudio[index].name;
   document.querySelector("#artist").textContent = tags?.artist ?? "Unknown";
