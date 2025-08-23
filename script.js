@@ -40,24 +40,51 @@ async function getBlob(url) {
   });
 }
 
+function formatDuration(seconds) {
+  const minutes = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${minutes}:${secs.toString().padStart(2, "0")}`;
+}
+
 async function getMusicTags(url) {
   const blob = await getBlob(url);
 
-  return new Promise((resolve, reject) => {
+  const tags = await new Promise((resolve, reject) => {
     jsmediatags.read(blob, {
       onSuccess: (tag) => {
-        resolve({
-          title: tag.tags.title || "",
-          artist: tag.tags.artist || "",
-          album: tag.tags.album || "",
-          year: tag.tags.year || "",
-        });
+        const tags = {
+          title: tag?.tags?.title?.trim() || null,
+          artist: tag?.tags?.artist?.trim() || null,
+          album: tag?.tags?.album?.trim() || null,
+          year: tag?.tags?.year?.trim() || null,
+        };
+
+        let cover = null;
+        if (tag.tags.picture) {
+          const { data, format } = tag.tags.picture;
+          const byteArr = new Uint8Array(data);
+          const pictureBlob = new Blob([byteArr], { type: format });
+          cover = URL.createObjectURL(pictureBlob);
+        }
+
+        resolve({ ...tags, cover });
       },
       onError: () => {
         reject(null);
       },
     });
   });
+
+  const duration = await new Promise((resolve) => {
+    const audio = new Audio(URL.createObjectURL(blob));
+    audio.addEventListener("loadedmetadata", () => {
+      resolve(audio.duration);
+    });
+  });
+
+  const formatted = formatDuration(duration);
+
+  return { ...tags, duration: formatted };
 }
 
 let selectedItems = [];
@@ -70,14 +97,16 @@ async function createTrackItem(index, name, file) {
   trackItem.dataset.index = index;
   trackItem.className =
     "w-full h-[70px] px-6 rounded-sm hover:bg-[#2C2B30]/50 relative flex items-center py-5 cursor-pointer";
-  // const tags = await getMusicTags(file);
-  const tags = null;
+  const tags = await getMusicTags(file);
+  // const tags = null;
   trackItem.innerHTML = `
     <div class="w-[45%] h-full flex items-center">
-      <span class="mr-6 text-white text-lg font-book opacity-70 w-[45px]">${trackItemIndex++}</span>
+      <span class="mr-6 text-white text-lg font-book opacity-70 w-[45px]">${
+        trackItemIndex++
+      }</span>
       <img
         alt="Cover"
-        src="./images/commonimages/dummy-cover-thumb.png"
+        src="${tags?.cover ?? "./images/commonimages/dummy-cover-thumb.png"}"
         width="300"
         height="300"
         class="h-full w-fit"
@@ -115,7 +144,9 @@ async function createTrackItem(index, name, file) {
         class="mr-8 cursor-pointer"
         style="color: transparent"
       />
-      <h1 class="text-white text-sm font-book opacity-70">0:00</h1>
+      <h1 class="text-white text-sm font-book opacity-70">${
+        tags?.duration ?? "0:00"
+      }</h1>
     </div>
   `;
 
@@ -218,11 +249,14 @@ async function renderPlaylist() {
   );
 
   document.querySelector("#source-audio").src = listAudio[indexAudio].file;
-  // const tags = await getMusicTags(listAudio[indexAudio].file);
-  const tags = null;
+  const tags = await getMusicTags(listAudio[indexAudio].file);
+  // const tags = null;
   document.querySelector("#title").textContent =
     tags?.title ?? listAudio[indexAudio].name;
   document.querySelector("#artist").textContent = tags?.artist ?? "Unknown";
+  if (tags?.cover) {
+    document.querySelector("#player-music-cover").src = tags.cover;
+  }
   currentAudio.load();
 }
 
@@ -231,11 +265,14 @@ renderPlaylist();
 async function loadNewTrack(index) {
   currentAudio.pause();
   document.querySelector("#source-audio").src = listAudio[index].file;
-  // const tags = await getMusicTags(listAudio[index].file);
-  const tags = null;
+  const tags = await getMusicTags(listAudio[index].file);
+  // const tags = null;
   document.querySelector("#title").textContent =
     tags?.title ?? listAudio[index].name;
   document.querySelector("#artist").textContent = tags?.artist ?? "Unknown";
+  if (tags?.cover) {
+    document.querySelector("#player-music-cover").src = tags.cover;
+  }
   currentAudio.load();
   toggleAudio();
   // updateStylePlaylist(indexAudio, index);
