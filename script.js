@@ -97,8 +97,8 @@ async function createTrackItem(index, name, file) {
   trackItem.dataset.index = index;
   trackItem.className =
     "w-full h-[70px] px-6 rounded-sm hover:bg-[#2C2B30]/50 relative flex items-center py-5 cursor-pointer";
-  const tags = await getMusicTags(file);
-  // const tags = null;
+  // const tags = await getMusicTags(file);
+  const tags = null;
   trackItem.innerHTML = `
     <div class="w-[45%] h-full flex items-center">
       <span class="mr-6 text-white text-lg font-book opacity-70 w-[45px]">${
@@ -254,9 +254,7 @@ async function renderPlaylist() {
   document.querySelector("#title").textContent =
     tags?.title ?? listAudio[indexAudio].name;
   document.querySelector("#artist").textContent = tags?.artist ?? "Unknown";
-  if (tags?.cover) {
-    document.querySelector("#player-music-cover").src = tags.cover;
-  }
+  document.querySelector("#player-music-cover").src = tags?.cover ?? "./images/commonimages/dummy-cover-thumb.png";
   currentAudio.load();
 }
 
@@ -270,9 +268,7 @@ async function loadNewTrack(index) {
   document.querySelector("#title").textContent =
     tags?.title ?? listAudio[index].name;
   document.querySelector("#artist").textContent = tags?.artist ?? "Unknown";
-  if (tags?.cover) {
-    document.querySelector("#player-music-cover").src = tags.cover;
-  }
+  document.querySelector("#player-music-cover").src = tags?.cover ?? "./images/commonimages/dummy-cover-thumb.png";
   currentAudio.load();
   toggleAudio();
   // updateStylePlaylist(indexAudio, index);
