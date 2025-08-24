@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="style.css" media="all" />
   </head>
   <body class="bg-[#121313] overflow-hidden">
-    <audio id="myAudio" ontimeupdate="onTimeUpdate()">
+    <audio id="audio-player" ontimeupdate="onTimeUpdate()">
       <source id="source-audio" src="" type="audio/mpeg" />
       Your browser does not support the audio element.
     </audio>
@@ -280,20 +280,29 @@
           class="mx-2 opacity-50 hover:opacity-100"
         />
         <img
-          src="./images/commonicons/sound25icon.svg"
+          src="./images/commonicons/soundicongreen.svg"
           id="player_sound_icon"
-          alt="sound icon"
+          alt="Sound"
           width="16"
           height="16"
-          class="mx-2 opacity-50 hover:opacity-100 player_sound_icon"
+          class="mx-2 opacity-50 hover:opacity-100 player_sound_icon cursor-pointer"
+        />
+        <img
+          src="./images/commonicons/sound25icon.svg"
+          id="player_mute_icon"
+          alt="Mute"
+          width="16"
+          height="16"
+          class="mx-2 opacity-50 hover:opacity-100 player_sound_icon cursor-pointer hidden"
         />
         <div
           id="sound_background"
-          class="w-[40%] h-full flex items-center mx-2 relative sound"
+          class="w-[40%] h-full flex items-center mx-2 relative sound cursor-pointer"
         >
           <div class="w-full h-[0.30rem] relative bg-[#5F5C5D] rounded-full">
             <div
               id="sound_bar"
+              title="100%"
               class="w-[100%] h-[0.30rem] absolute sound_bar bg-white rounded-full flex items-center justify-end"
             >
               <div

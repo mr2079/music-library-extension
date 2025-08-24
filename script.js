@@ -1,7 +1,7 @@
 const DB_KEY = "audio_playlists";
 
 let listAudio = [];
-let currentAudio = document.getElementById("myAudio");
+let currentAudio = document.querySelector("#audio-player");
 let indexAudio = 0;
 let playListContainer = document.querySelector("#playlistCtn");
 
@@ -89,8 +89,6 @@ async function getMusicTags(url) {
 
 let selectedItems = [];
 
-let trackItemIndex = 1;
-
 async function createTrackItem(index, name, file) {
   const trackItem = document.createElement("div");
   trackItem.id = `ptc-${index}`;
@@ -101,9 +99,15 @@ async function createTrackItem(index, name, file) {
   const tags = null;
   trackItem.innerHTML = `
     <div class="w-[45%] h-full flex items-center">
-      <span class="mr-6 text-white text-lg font-book opacity-70 w-[45px]">${
-        trackItemIndex++
-      }</span>
+      <span class="mr-6 text-white text-lg font-book opacity-70 w-[45px]">
+        <img
+          id="ptc-${index}-playing"
+          alt="Playing"
+          src="/images/commonimages/equaliser-animated-green.gif"
+          class="h-full w-fit hidden"
+        />
+        <span id="ptc-${index}-num">${index + 1}</span>
+      </span>
       <img
         alt="Cover"
         src="${tags?.cover ?? "./images/commonimages/dummy-cover-thumb.png"}"
@@ -259,7 +263,8 @@ async function renderPlaylist() {
     tags?.title ?? listAudio[indexAudio].name;
   document.querySelector("#artist").textContent = tags?.artist ?? "Unknown";
   document.querySelector("#duration").textContent = tags?.duration ?? "0:00";
-  document.querySelector("#player-music-cover").src = tags?.cover ?? "./images/commonimages/dummy-cover-thumb.png";
+  document.querySelector("#player-music-cover").src =
+    tags?.cover ?? "./images/commonimages/dummy-cover-thumb.png";
   currentAudio.load();
 }
 
@@ -278,7 +283,8 @@ async function loadNewTrack(index) {
     tags?.title ?? listAudio[index].name;
   document.querySelector("#artist").textContent = tags?.artist ?? "Unknown";
   document.querySelector("#duration").textContent = tags?.duration ?? "0:00";
-  document.querySelector("#player-music-cover").src = tags?.cover ?? "./images/commonimages/dummy-cover-thumb.png";
+  document.querySelector("#player-music-cover").src =
+    tags?.cover ?? "./images/commonimages/dummy-cover-thumb.png";
   currentAudio.load();
   toggleAudio();
   // updateStylePlaylist(indexAudio, index);
@@ -340,6 +346,38 @@ document
     document.getElementById("seek_bar").style.width = `${percent * 100}%`;
   });
 
+const soundIconElement = document.querySelector("#player_sound_icon");
+const muteIconElement = document.querySelector("#player_mute_icon");
+const soundBarElement = document.querySelector("#sound_bar");
+
+document
+  .querySelector("#sound_background")
+  .addEventListener("click", (event) => {
+    const value = event.offsetX / event.currentTarget.offsetWidth;
+    const percent = `${Math.round(value * 100)}%`;
+    soundBarElement.style.width = percent;
+    currentAudio.volume = value;
+    soundBarElement.title = percent;
+    if (value > 0) {
+      soundIconElement.classList.remove("hidden");
+      muteIconElement.classList.add("hidden");
+    }
+  });
+
+document.querySelector("#player_sound_icon").addEventListener("click", () => {
+  currentAudio.volume = 0;
+  soundBarElement.style.width = `0%`;
+  soundIconElement.classList.add("hidden");
+  muteIconElement.classList.remove("hidden");
+});
+
+document.querySelector("#player_mute_icon").addEventListener("click", () => {
+  currentAudio.volume = 1;
+  soundBarElement.style.width = `100%`;
+  soundIconElement.classList.remove("hidden");
+  muteIconElement.classList.add("hidden");
+});
+
 function forward() {
   currentAudio.currentTime += 5;
   setBarProgress();
@@ -392,6 +430,12 @@ async function remove() {
     await removeAudios(selectedItems);
   }
 }
+
+document.addEventListener("keydown", (event) => {
+  if (event.code === "Space") {
+    toggleAudioElement.click();
+  }
+});
 
 // const searchContainer = document.querySelector(".search-container");
 // const searchInput = document.getElementById("search-bar");
