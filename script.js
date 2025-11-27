@@ -169,13 +169,15 @@ async function createTrackItem(index, name, file) {
 
   const removeBtn = trackItem.querySelector(".btn-remove");
   if (removeBtn) {
-    removeBtn.addEventListener("click", function(event) {
+    removeBtn.addEventListener("click", function (event) {
       event.stopPropagation();
-      const isConfirmed = confirm("Are you sure you want to remove this song from playlist?");
+      const isConfirmed = confirm(
+        "Are you sure you want to remove this song from playlist?"
+      );
       if (!isConfirmed) return;
       const selectedIndex = event.currentTarget.dataset.index;
       singleRemove(selectedIndex);
-    })
+    });
   }
 
   playListContainer.appendChild(trackItem);
@@ -391,11 +393,23 @@ document.addEventListener("keydown", (event) => {
 });
 
 function singleRemove(index) {
-  const i = Number(index)
-  const file = listAudio[i].file
-  selectedItems.push(file)
-  remove()
-    .catch(_ => {
-      selectedItems = [];
-    })
+  const i = Number(index);
+  const file = listAudio[i].file;
+  selectedItems.push(file);
+  remove().catch((_) => {
+    selectedItems = [];
+  });
 }
+
+document
+  .querySelector("#saveToPlaylist")
+  .addEventListener("click", function (event) {
+    const url = prompt("Enter the song url: ");
+    if (url?.length == 0) return;
+    getSavedAudios().then((audios) => {
+      audios.push(url);
+      chrome.storage.local.set({ [DB_KEY]: audios }, () => {
+        location.reload();
+      });
+    });
+  });
