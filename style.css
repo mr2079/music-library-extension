@@ -143,3 +143,12 @@ input[type="search"] {
   scrollbar-width: thin;
   scrollbar-color: #3a3a3a #1a1a1a;
 }
+
+.btn-remove {
+  z-index: 1000;
+  border-radius: 50%;
+}
+
+.btn-remove:hover {
+  background-color: rgba(0 , 0, 0, 0.5);
+}

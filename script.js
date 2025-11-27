@@ -95,8 +95,10 @@ async function createTrackItem(index, name, file) {
   trackItem.dataset.index = index;
   trackItem.className =
     "w-full h-[70px] px-6 rounded-sm hover:bg-[#2C2B30]/50 relative flex items-center py-5 cursor-pointer";
+
   // const tags = await getMusicTags(file);
   const tags = null;
+
   trackItem.innerHTML = `
     <div class="w-[45%] h-full flex items-center">
       <span class="mr-6 text-white text-lg font-book opacity-70 w-[45px]">
@@ -140,14 +142,17 @@ async function createTrackItem(index, name, file) {
       </h1>
     </div>
     <div class="w-[10%] h-full flex items-center justify-end">
-      <img
-        alt="Heart Icon"
-        src="./images/commonicons/hearticongreen.svg"
-        width="15"
-        height="15"
-        class="mr-8 cursor-pointer"
-        style="color: transparent"
-      />
+      <span 
+        data-index="${index}"
+        title="Remove"
+        class="mr-8 p-2 cursor-pointer btn-remove">
+        <img
+          alt="Heart Icon"
+          src="./images/commonicons/libraryicon.svg"
+          width="15"
+          height="15"
+        />
+      </span>
       <h1 class="text-white text-sm font-book opacity-70">${
         tags?.duration ?? "0:00"
       }</h1>
@@ -162,73 +167,19 @@ async function createTrackItem(index, name, file) {
     }
   });
 
+  const removeBtn = trackItem.querySelector(".btn-remove");
+  if (removeBtn) {
+    removeBtn.addEventListener("click", function(event) {
+      event.stopPropagation();
+      const isConfirmed = confirm("Are you sure you want to remove this song from playlist?");
+      if (!isConfirmed) return;
+      const selectedIndex = event.currentTarget.dataset.index;
+      singleRemove(selectedIndex);
+    })
+  }
+
   playListContainer.appendChild(trackItem);
 }
-
-// function createTrackItem(index, name, duration, file) {
-//   const trackItem = document.createElement("div");
-//   trackItem.className = "playlist-track-ctn";
-//   trackItem.id = `ptc-${index}`;
-//   trackItem.dataset.index = index;
-
-//   const playBtnItem = document.createElement("div");
-//   playBtnItem.className = "playlist-btn-play";
-//   playBtnItem.id = `pbp-${index}`;
-
-//   const btnImg = document.createElement("i");
-//   btnImg.className = "fas fa-play";
-//   btnImg.id = `p-img-${index}`;
-
-//   playBtnItem.appendChild(btnImg);
-
-//   const trackInfoItem = document.createElement("div");
-//   trackInfoItem.className = "playlist-info-track";
-//   trackInfoItem.textContent = name;
-
-//   const trackDurationItem = document.createElement("div");
-//   trackDurationItem.className = "playlist-duration";
-//   trackDurationItem.textContent = duration;
-
-//   const selectBox = document.createElement("input");
-//   selectBox.type = "checkbox";
-//   selectBox.id = `sb-${replace(name, "_")}`;
-//   selectBox.className = "playlist-selectbox";
-//   // removeBtn.className = "remove-btn";
-//   selectBox.addEventListener("click", (e) => {
-//     e.stopPropagation();
-//     // removeAudio(file);
-//     if (e.target.checked) {
-//       selectedItems.push(file);
-//     } else {
-//       selectedItems = selectedItems.filter((src) => src != file);
-//     }
-//   });
-
-//   // const icon = document.createElement("i");
-//   // icon.className = "fas fa-times";
-//   // removeBtn.appendChild(icon);
-
-//   // removeBtn.addEventListener("click", (e) => {
-//   //   e.stopPropagation();
-//   //   removeAudio(file);
-//   // });
-
-//   trackItem.appendChild(playBtnItem);
-//   trackItem.appendChild(trackInfoItem);
-//   trackItem.appendChild(trackDurationItem);
-//   // trackItem.appendChild(removeBtn);
-//   trackItem.appendChild(selectBox);
-
-//   trackItem.addEventListener("click", () => {
-//     if (index === indexAudio) {
-//       toggleAudio();
-//     } else {
-//       loadNewTrack(index);
-//     }
-//   });
-
-//   playListContainer.appendChild(trackItem);
-// }
 
 async function removeAudios(files) {
   const audios = await getSavedAudios();
@@ -366,7 +317,8 @@ document
 
 document.querySelector("#player_sound_icon").addEventListener("click", () => {
   currentAudio.volume = 0;
-  soundBarElement.style.width = `0%`;
+  soundBarElement.style.width = "0%";
+  soundBarElement.title = "0%";
   soundIconElement.classList.add("hidden");
   muteIconElement.classList.remove("hidden");
 });
@@ -374,6 +326,7 @@ document.querySelector("#player_sound_icon").addEventListener("click", () => {
 document.querySelector("#player_mute_icon").addEventListener("click", () => {
   currentAudio.volume = 1;
   soundBarElement.style.width = `100%`;
+  soundBarElement.title = `100%`;
   soundIconElement.classList.remove("hidden");
   muteIconElement.classList.add("hidden");
 });
@@ -437,77 +390,12 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
-// const searchContainer = document.querySelector(".search-container");
-// const searchInput = document.getElementById("search-bar");
-
-// function performSearch(query) {
-//   const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(
-//     query
-//   )}`;
-//   window.open(searchUrl, "_blank");
-// }
-
-// searchInput.addEventListener("keydown", (event) => {
-//   if (event.key === "Enter") {
-//     const query = searchInput.value;
-//     if (query.trim()) {
-//       performSearch(query);
-//     }
-//   }
-// });
-
-// // document.addEventListener("keydown", (event) => {
-// //   if (event.key === "/" && document.activeElement !== searchInput) {
-// //     event.preventDefault();
-// //     searchInput.focus();
-// //   }
-// // });
-
-// const suggestionsBox = document.getElementById("suggestions-box");
-// let debounceTimer;
-
-// searchInput.addEventListener("input", () => {
-//   clearTimeout(debounceTimer);
-//   debounceTimer = setTimeout(() => {
-//     const query = searchInput.value.trim();
-//     if (query.length === 0) {
-//       suggestionsBox.innerHTML = "";
-//       suggestionsBox.style.display = "none";
-//       return;
-//     }
-
-//     fetch(`http://localhost:3000/suggest/${encodeURIComponent(query)}`)
-//       .then((res) => res.json())
-//       .then((data) => {
-//         if (data.success && Array.isArray(data.data) && data.data.length > 0) {
-//           suggestionsBox.innerHTML = data.data
-//             .map(
-//               (suggestion) =>
-//                 `<li style="padding: 5px; cursor: pointer;">${suggestion}</li>`
-//             )
-//             .join("");
-//           suggestionsBox.style.display = "block";
-
-//           suggestionsBox.querySelectorAll("li").forEach((li) => {
-//             li.addEventListener("click", () => {
-//               suggestionsBox.style.display = "none";
-//               performSearch(li.textContent);
-//             });
-//           });
-//         } else {
-//           suggestionsBox.innerHTML = "";
-//           suggestionsBox.style.display = "none";
-//         }
-//       })
-//       .catch(() => {
-//         suggestionsBox.innerHTML = "";
-//         suggestionsBox.style.display = "none";
-//       });
-//   }, 500);
-// });
-
-// // document.addEventListener("click", (e) => {
-// //   if (!searchContainer.contains(e.target)) {
-// //     suggestionsBox.style.display = "none";
-// //   }
-// // });
+function singleRemove(index) {
+  const i = Number(index)
+  const file = listAudio[i].file
+  selectedItems.push(file)
+  remove()
+    .catch(_ => {
+      selectedItems = [];
+    })
+}
