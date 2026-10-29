@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Music Library</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="popup.css" />
+    <script type="module" src="popup.js"></script>
+  </head>
+  <body class="popup-body">
+    <header class="popup-header">
+      <a class="brand" href="index.html" id="popup-brand"
+        ><img
+          class="brand-logo"
+          src="icons/logo.svg"
+          alt=""
+          width="36"
+          height="36"
+        /><span
+          >music<span class="brand-light">library</span
+          ><small>YOUR SOUND, YOUR SPACE</small></span
+        ></a
+      ><button class="icon-button" id="popup-theme" aria-label="Switch theme">
+        <span data-icon="sun"></span>
+      </button>
+    </header>
+    <section class="popup-playing" aria-label="Now playing">
+      <div class="popup-record" id="popup-cover">
+        <span data-icon="music"></span>
+      </div>
+      <div>
+        <span class="eyebrow" id="popup-player-label">YOUR NEXT LISTEN</span>
+        <h1 id="popup-title">Find your frequency.</h1>
+        <p id="popup-artist">Your collection is one click away.</p>
+      </div>
+      <div class="popup-controls">
+        <button
+          class="icon-button"
+          id="popup-previous"
+          aria-label="Previous track"
+        >
+          <span data-icon="previous"></span></button
+        ><button class="play-button" id="popup-play" aria-label="Play">
+          <span data-icon="play"></span></button
+        ><button class="icon-button" id="popup-next" aria-label="Next track">
+          <span data-icon="next"></span>
+        </button>
+      </div>
+    </section>
+    <div class="search-box popup-search">
+      <span data-icon="search"></span
+      ><input
+        id="popup-search"
+        type="search"
+        placeholder="Find a track…"
+        aria-label="Search library"
+        autocomplete="off"
+      />
+    </div>
+    <div class="popup-section-heading">
+      <h2>Your collection <span id="popup-count">0</span></h2>
+      <button
+        class="icon-button"
+        id="popup-add"
+        aria-label="Add music in library"
+        title="Add music"
+      >
+        <span data-icon="plus"></span>
+      </button>
+    </div>
+    <div
+      id="popup-tracks"
+      class="popup-tracks"
+      role="list"
+      aria-label="Library tracks"
+    ></div>
+    <p id="popup-empty" class="popup-empty">
+      Your soundtrack starts here.<br />Add your first tracks in the library.
+    </p>
+    <p id="popup-message" class="popup-message" role="status"></p>
+    <button id="popup-open" class="button primary popup-open">
+      <span data-icon="library"></span>Open your library<span
+        data-icon="external"
+      ></span>
+    </button>
+    <footer class="popup-footer">
+      <span class="status-dot"></span>SAVED ON THIS DEVICE <span>V2.0</span>
+    </footer>
+  </body>
+</html>

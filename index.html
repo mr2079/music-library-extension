@@ -1,326 +1,443 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="utf-8" />
-    <title>Music Library</title>
-    <link rel="icon" href="music-library.ico" type="image/x-icon" />
-    <script src="tailwindcss.js"></script>
-    <link rel="stylesheet" href="style.css" media="all" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark light" />
+    <title>Music Library · Your sound, your space</title>
+    <link rel="icon" href="icons/logo.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="style.css" />
+    <script src="vendor/jsmediatags.min.js" defer></script>
+    <script type="module" src="script.js"></script>
   </head>
-  <body class="bg-[#121313] overflow-hidden">
-    <audio id="audio-player" ontimeupdate="onTimeUpdate()">
-      <source id="source-audio" src="" type="audio/mpeg" />
-      Your browser does not support the audio element.
-    </audio>
-
-    <div class="flex flex-col w-full h-screen">
-      <div
-        id="home_section"
-        class="bg-[#121313] w-full flex flex-col items-center flex-1"
-      >
-        <div class="w-full relative flex-1">
-          <div class="w-full h-[250px] flex items-center pl-10">
-            <div
-              class="w-[100%] absolute -ml-[20%] -mt-[220px] h-[100px] bg-gradient-to-br from-[#5629F3]/90 via-[#5629F3]/50 to-black blur-2xl"
-            ></div>
-
-            <div
-              class="w-[200px] h-[200px] shadow-lg shadow-black/20 mt-16 bg-gradient-to-br from-[#4C1BF3] to-white flex items-center justify-center"
-            >
-              <img
-                src="./images/commonicons/hearticon.svg"
-                height="80"
-                width="80"
-                priority="{true}"
+  <body>
+    <a class="skip-link" href="#track-list">Skip to songs</a>
+    <div class="app-shell">
+      <main class="main">
+        <header class="topbar">
+          <a class="brand" href="index.html"
+            ><img
+              class="brand-logo"
+              src="icons/logo.svg"
+              alt=""
+              width="42"
+              height="42"
+            /><span
+              >music<span class="brand-light">library</span
+              ><small>YOUR SOUND, YOUR SPACE</small></span
+            ></a
+          >
+          <div class="search-box">
+            <span data-icon="search"></span
+            ><input
+              type="search"
+              id="search"
+              placeholder="Search songs, artists, albums…"
+              aria-label="Search songs, artists, and albums"
+              autocomplete="off"
+            /><kbd>/</kbd>
+          </div>
+          <button
+            class="icon-button"
+            id="shortcut-button"
+            aria-label="Keyboard shortcuts"
+            title="Keyboard shortcuts (?)"
+          >
+            <span data-icon="keyboard"></span>
+          </button>
+          <button
+            class="icon-button"
+            id="theme-button"
+            aria-label="Switch to light theme"
+            title="Switch theme"
+          >
+            <span data-icon="sun"></span>
+          </button>
+          <button
+            class="button primary top-add"
+            id="add-button"
+            aria-label="Add music"
+          >
+            <span data-icon="plus"></span><span>Add music</span>
+          </button>
+        </header>
+        <section class="hero" aria-labelledby="page-title">
+          <div class="hero-copy">
+            <div class="eyebrow">
+              <span class="status-dot"></span> MADE FOR YOUR EVERYDAY ROTATION
+            </div>
+            <h1 id="page-title">Your library<span>.</span></h1>
+            <p id="page-description">Good music. All in one place.</p>
+            <div class="hero-actions">
+              <button class="button primary" id="play-all">
+                <span data-icon="play"></span>Play all</button
+              ><button class="button subtle" id="shuffle-all">
+                <span data-icon="shuffle"></span>Shuffle
+              </button>
+            </div>
+            <div class="library-stats" id="library-stats">
+              0 tracks · Make room for your favorites
+            </div>
+          </div>
+          <div class="record-art" aria-hidden="true">
+            <div class="record-sleeve">
+              <span>THE PERSONAL<br />COLLECTION</span>
+              <div class="sleeve-line"></div>
+              <small>VOL. 002<br />CURATED BY YOU</small>
+            </div>
+            <div class="record">
+              <div class="record-label">
+                <span data-icon="wave"></span><small>SIDE A / ALWAYS YOU</small>
+              </div>
+            </div>
+            <div class="art-caption">LESS SCROLLING. MORE LISTENING.</div>
+          </div>
+        </section>
+        <section class="collection" aria-labelledby="collection-title">
+          <nav id="navigation" aria-label="Library filters">
+            <button class="nav-item active" data-view="all" aria-current="page">
+              <span data-icon="library"></span><span>All tracks</span
+              ><span class="nav-count" id="all-count">0</span>
+            </button>
+            <button class="nav-item" data-view="favorites">
+              <span data-icon="heart"></span><span>Favorites</span
+              ><span class="nav-count" id="favorite-count">0</span>
+            </button>
+            <button class="nav-item" data-view="recent">
+              <span data-icon="clock"></span><span>Recently added</span>
+            </button>
+          </nav>
+          <div class="collection-toolbar">
+            <div>
+              <h2 id="collection-title">
+                <span id="collection-name">All tracks</span>
+                <span id="visible-count">0</span>
+              </h2>
+              <p id="collection-hint">
+                Your next favorite is already out there.
+              </p>
+            </div>
+            <div class="collection-options">
+              <label class="sort-control"
+                ><span data-icon="sort"></span
+                ><select id="sort" aria-label="Sort songs">
+                  <option value="custom">Custom order</option>
+                  <option value="title">Title A–Z</option>
+                  <option value="artist">Artist A–Z</option>
+                  <option value="newest">Newest first</option>
+                </select></label
+              ><span class="toolbar-divider"></span
+              ><button
+                class="icon-button"
+                id="import-library"
+                aria-label="Import library JSON file"
+                title="Import library file"
+              >
+                <span data-icon="upload"></span></button
+              ><button
+                class="icon-button"
+                id="export-library"
+                aria-label="Export song links as a portable JSON file"
+                title="Export library file"
+              >
+                <span data-icon="download"></span></button
+              ><input
+                type="file"
+                id="library-file"
+                class="sr-only"
+                accept=".json,application/json"
+                tabindex="-1"
+                aria-label="Choose library JSON file"
               />
             </div>
-            <div class="w-auto h-[150px] mt-16 ml-6 flex flex-col justify-end">
-              <h1 class="text-white uppercase text-xs font-bold">
-                Music Library
-              </h1>
-              <h1 class="text-white text-[5.5rem] font-black">Playlist</h1>
-            </div>
           </div>
-
-          <div class="w-full z-50 pr-16 relative pl-10 h-[calc(100vh-310px)]">
-            <div class="w-full my-[40px] flex justify-start items-center">
-              <div
-                class="w-14 h-14 bg-hover hover:scale-105 rounded-full flex items-center justify-center"
-              >
-                <img
-                  src="./images/commonicons/saveicon.svg"
-                  id="saveToPlaylist"
-                  alt="play icon green"
-                />
-              </div>
-            </div>
-
-            <div
-              id="playlistCtn"
-              class="w-full flex flex-col overflow-y-auto h-full scrollbar-thin scrollbar-thumb-[#5629F3] scrollbar-track-[#1e1e1e] pb-48"
-            >
-              <div
-                class="w-full h-[30px] border-b px-6 border-b-[#2B2A2B] flex items-center"
-              >
-                <div class="w-[45%] h-full flex">
-                  <span
-                    class="mr-6 text-white text-sm font-book mb-4 opacity-70 w-[45px]"
-                    >#</span
-                  >
-                  <h1 class="text-white text-sm font-book mb-4 opacity-70">
-                    Title
-                  </h1>
-                </div>
-                <div class="w-[28%] h-full flex">
-                  <h1 class="text-white text-sm font-book mb-4 opacity-70">
-                    Album
-                  </h1>
-                </div>
-                <div class="w-[22%] h-full flex">
-                  <h1 class="text-white text-sm font-book mb-4 opacity-70">
-                    Date added
-                  </h1>
-                </div>
-                <div class="w-[10%] h-full flex justify-end">
-                  <h1 class="text-white text-sm font-book mb-4 opacity-70">
-                    Duration
-                  </h1>
-                </div>
-              </div>
-              <!-- Playlist items here -->
-            </div>
+          <div class="table-heading" aria-hidden="true">
+            <span>#</span><span>TRACK / ARTIST</span
+            ><span class="album-column">ALBUM</span
+            ><span class="date-column">ADDED</span
+            ><span class="duration-column" data-icon="clock"></span
+            ><span></span>
           </div>
-        </div>
-      </div>
+          <div
+            id="track-list"
+            class="track-list"
+            role="list"
+            aria-label="Songs"
+            tabindex="-1"
+          ></div>
+          <div class="empty-state" id="empty-state">
+            <div class="empty-icon" data-icon="music"></div>
+            <h3>Your soundtrack starts here.</h3>
+            <p>
+              Add a song link, import audio files, or collect<br />music from
+              the websites you visit.
+            </p>
+            <button class="button primary" id="empty-add">
+              <span data-icon="plus"></span>Add your first tracks</button
+            ><small>MP3, M4A, WAV, OGG, FLAC & more</small>
+          </div>
+          <footer class="collection-footer">
+            <span id="footer-count">0 TRACKS IN YOUR COLLECTION</span
+            ><span>SAVED ON THIS DEVICE <span class="status-dot"></span></span>
+          </footer>
+        </section>
+      </main>
     </div>
-    <div
-      id="player_section"
-      class="h-24 z-[100] bg-[#181919] border-t border-t-[#292928] flex w-full fixed bottom-0 left-0"
-    >
-      <div class="hidden">
-        <audio id="player_audio" src=""></audio>
-      </div>
-
-      <div class="w-[30%] md:flex h-full px-6 py-4 hidden">
-        <img
-          id="player-music-cover"
-          src="./images/commonimages/dummy-cover-thumb.png"
-          alt="Cover"
-          class="h-full w-fit"
-          width="600"
-          height="600"
-        />
-        <div class="w-full h-full flex flex-col justify-center ml-4">
-          <h1
-            id="title"
-            class="text-sm font-book text-white hover:underline cursor-pointer"
-          >
-            Music
-          </h1>
-          <h1 class="text-xs text-[#B2B3B2] mt-1">
-            <span
-              id="artist"
-              class="hover:text-white hover:underline cursor-pointer font-book"
-            >
-              Artist
-            </span>
-            <!-- ,
-            <span
-              class="hover:text-white hover:underline cursor-pointer font-book ml-1"
-            >
-              Hamoud Al Qahtani
-            </span> -->
-          </h1>
+    <footer class="player" aria-label="Music player">
+      <div class="now-playing">
+        <div class="player-cover" id="player-cover">
+          <span data-icon="music"></span>
         </div>
-        <div class="w-5 flex items-center">
-          <!-- {isLiked ? (
-            <img
-              onClick={() => setIsLiked(false)}
-              src={HeartIconGreen}
-              alt="Heart Outline Icon"
-              priority={true}
-              class="h-4 cursor-pointer fill-green-500  w-4 "
-            />
-          ) : (
-            <img
-              onClick={() => setIsLiked(true)}
-              src={HeartOutlineIcon}
-              alt="Heart Outline Icon"
-              priority={true}
-              class=" cursor-pointer opacity-70 hover:opacity-100"
-            />
-          )} -->
+        <div class="now-playing-copy">
+          <strong id="player-title">Nothing playing yet</strong
+          ><span id="player-artist">Find something you love.</span
+          ><span id="player-status" role="status"></span>
         </div>
-      </div>
-      <div class="w-[40%] flex flex-col h-full pl-6 py-4">
-        <div class="h-[65%] w-full flex justify-center items-center">
-          <img
-            src="./images/commonicons/shuffleicon.svg"
-            alt="shuffle"
-            class="opacity-30 hover:opacity-100 mx-3"
-          />
-          <!-- {isShuffle ? (
-            <img
-              onClick={() => setIsShuffle(false)}
-              src={ShuffleIconGreen}
-              alt="shuffle icon green"
-              priority={true}
-              class=" mx-3"
-            />
-          ) : (
-            <img
-              onClick={() => setIsShuffle(true)}
-              src={ShuffleIcon}
-              alt="shuffle icon"
-              priority={true}
-              class="opacity-30 hover:opacity-100 mx-3"
-            />
-          )} -->
-
-          <img
-            id="previous"
-            src="./images/commonicons/previousicon.svg"
-            alt="previous"
-            class="opacity-70 hover:opacity-100 mx-3 cursor-pointer"
-          />
-
-          <div
-            id="toggleAudio"
-            class="bg-white h-8 hover:scale-110 rounded-full w-8 p-2 flex items-center justify-center mx-3 cursor-pointer"
-          >
-            <img
-              id="icon-play"
-              src="./images/commonicons/playicon.svg"
-              alt="play"
-            />
-            <img
-              id="icon-pause"
-              style="display: none;"
-              src="./images/commonicons/pauseicon.svg"
-              alt="pause"
-            />
-          </div>
-
-          <img
-            id="next"
-            src="./images/commonicons/nexticon.svg"
-            alt="next"
-            class="opacity-70 hover:opacity-100 mx-3 cursor-pointer"
-          />
-          <img
-            src="./images/commonicons/repeaticon.svg"
-            alt="repeat"
-            class="opacity-30 hover:opacity-100 mx-3"
-          />
-          <!-- {isRepeat ? (
-            <img
-              onClick={() => setIsRepeat(false)}
-              src={RepeatIconGreen}
-              alt="repeat icon green"
-              priority={true}
-              class=" mx-3"
-            />
-          ) : (
-            <img
-              onClick={() => setIsRepeat(true)}
-              src={RepeatIcon}
-              alt="repeat icon"
-              priority={true}
-              class="opacity-30 hover:opacity-100 mx-3"
-            />
-          )} -->
-        </div>
-        <div class="h-[35%] w-full flex justify-center items-center">
-          <div class="w-[5%] h-full flex items-center justify-center px-2">
-            <p
-              id="current-time"
-              class="font-light text-xs opacity-50 text-white"
-            >
-              0:00
-            </p>
-          </div>
-          <div
-            id="seek_background"
-            class="sm:w-[90%] w-[70%] h-full flex items-center px-2 relative seek cursor-pointer"
-          >
-            <div class="w-full h-[0.22rem] relative bg-[#5F5C5D] rounded-full">
-              <div
-                id="seek_bar"
-                class="h-[0.22rem] absolute seek_bar bg-white rounded-full flex items-center justify-end"
-              >
-                <div
-                  id="seek_bar_dot"
-                  class="w-3 h-3 bg-white rounded-full seek_bar_dot opacity-0 absolute -mr-[5px]"
-                ></div>
-              </div>
-            </div>
-          </div>
-          <div class="w-[5%] h-full flex items-center justify-center px-2">
-            <p id="duration" class="font-light text-xs opacity-50 text-white">
-              0:00
-            </p>
-          </div>
-        </div>
-      </div>
-      <div class="w-[30%] flex justify-end h-full px-10 py-4">
-        <img
-          src="./images/commonicons/lyricsicon.svg"
-          alt="lyrics icon"
-          priority="{true}"
-          width="16"
-          height="16"
-          class="mx-2 opacity-50 hover:opacity-100"
-        />
-        <img
-          src="./images/commonicons/queueicon.svg"
-          alt="queue icon"
-          priority="{true}"
-          width="16"
-          height="16"
-          class="mx-2 opacity-50 hover:opacity-100"
-        />
-        <img
-          src="./images/commonicons/soundicongreen.svg"
-          id="player_sound_icon"
-          alt="Sound"
-          width="16"
-          height="16"
-          class="mx-2 opacity-50 hover:opacity-100 player_sound_icon cursor-pointer"
-        />
-        <img
-          src="./images/commonicons/sound25icon.svg"
-          id="player_mute_icon"
-          alt="Mute"
-          width="16"
-          height="16"
-          class="mx-2 opacity-50 hover:opacity-100 player_sound_icon cursor-pointer hidden"
-        />
-        <div
-          id="sound_background"
-          class="w-[40%] h-full flex items-center mx-2 relative sound cursor-pointer"
+        <button
+          class="icon-button"
+          id="player-favorite"
+          aria-label="Add current song to favorites"
+          disabled
         >
-          <div class="w-full h-[0.30rem] relative bg-[#5F5C5D] rounded-full">
-            <div
-              id="sound_bar"
-              title="100%"
-              class="w-[100%] h-[0.30rem] absolute sound_bar bg-white rounded-full flex items-center justify-end"
-            >
-              <div
-                class="w-3 h-3 bg-white rounded-full sound_bar_dot opacity-0 absolute -right-25"
-              ></div>
-            </div>
+          <span data-icon="heart"></span>
+        </button>
+      </div>
+      <div class="playback">
+        <div class="playback-buttons">
+          <button
+            class="icon-button"
+            id="shuffle"
+            aria-label="Shuffle"
+            aria-pressed="false"
+            title="Shuffle (S)"
+          >
+            <span data-icon="shuffle"></span></button
+          ><button
+            class="icon-button"
+            id="previous"
+            aria-label="Previous song"
+            title="Previous (Shift + ←)"
+          >
+            <span data-icon="previous"></span></button
+          ><button
+            class="play-button"
+            id="play"
+            aria-label="Play"
+            title="Play / pause (Space)"
+          >
+            <span data-icon="play"></span></button
+          ><button
+            class="icon-button"
+            id="next"
+            aria-label="Next song"
+            title="Next (Shift + →)"
+          >
+            <span data-icon="next"></span></button
+          ><button
+            class="icon-button"
+            id="repeat"
+            aria-label="Repeat off"
+            title="Repeat (R)"
+          >
+            <span data-icon="repeat"></span>
+          </button>
+        </div>
+        <div class="seek-control">
+          <time id="elapsed">0:00</time
+          ><input
+            id="seek"
+            type="range"
+            min="0"
+            max="100"
+            value="0"
+            step="0.1"
+            aria-label="Seek in song"
+            disabled
+          /><time id="duration">0:00</time>
+        </div>
+      </div>
+      <div class="player-options">
+        <span class="quality-label"
+          ><span class="status-dot"></span> YOUR OWN FREQUENCY</span
+        >
+        <div class="volume-control">
+          <button
+            class="icon-button"
+            id="mute"
+            aria-label="Mute"
+            title="Mute (M)"
+          >
+            <span data-icon="volume"></span></button
+          ><input
+            id="volume"
+            type="range"
+            min="0"
+            max="1"
+            value="0.7"
+            step="0.01"
+            aria-label="Volume"
+          />
+        </div>
+      </div>
+    </footer>
+    <dialog id="add-dialog" class="modal">
+      <form id="add-form">
+        <div class="modal-heading">
+          <div>
+            <span class="eyebrow">GROW YOUR COLLECTION</span>
+            <h2>A little more music.</h2>
+          </div>
+          <button
+            type="button"
+            class="icon-button"
+            data-close
+            aria-label="Close"
+          >
+            <span data-icon="close"></span>
+          </button>
+        </div>
+        <label class="field-label" for="song-urls">Add audio links</label
+        ><textarea
+          id="song-urls"
+          rows="3"
+          placeholder="https://example.com/your-favorite-song.mp3"
+          spellcheck="false"
+        ></textarea>
+        <p class="field-hint">
+          One direct audio link per line. Links to streaming service pages won’t
+          play.
+        </p>
+        <div class="divider"><span>OR BRING YOUR OWN</span></div>
+        <label class="file-drop" id="file-drop" for="audio-files"
+          ><span data-icon="upload"></span
+          ><strong>Drop your audio files here</strong
+          ><span>or <u>browse files</u></span
+          ><small>Files stay on this device, including after a restart.</small
+          ><input
+            type="file"
+            id="audio-files"
+            accept="audio/*,.mp3,.m4a,.wav,.ogg,.flac,.aac,.opus,.webm"
+            multiple
+        /></label>
+        <p id="file-selection" class="field-hint" role="status"></p>
+        <p id="add-error" class="form-error" role="alert"></p>
+        <div class="modal-actions">
+          <button type="button" class="button subtle" data-close>Cancel</button
+          ><button type="submit" class="button primary" id="add-submit">
+            <span data-icon="plus"></span>Add to library
+          </button>
+        </div>
+      </form>
+    </dialog>
+    <dialog id="shortcuts-dialog" class="modal">
+      <div class="modal-heading">
+        <div>
+          <span class="eyebrow">STAY IN THE FLOW</span>
+          <h2>A few handy shortcuts.</h2>
+        </div>
+        <button class="icon-button" data-close aria-label="Close">
+          <span data-icon="close"></span>
+        </button>
+      </div>
+      <dl class="shortcuts">
+        <div>
+          <dt>Play / pause</dt>
+          <dd><kbd>Space</kbd></dd>
+        </div>
+        <div>
+          <dt>Previous / next track</dt>
+          <dd><kbd>Shift</kbd> + <kbd>← / →</kbd></dd>
+        </div>
+        <div>
+          <dt>Seek backward / forward 5s</dt>
+          <dd><kbd>← / →</kbd></dd>
+        </div>
+        <div>
+          <dt>Volume up / down</dt>
+          <dd><kbd>↑ / ↓</kbd></dd>
+        </div>
+        <div>
+          <dt>Mute · shuffle · repeat</dt>
+          <dd><kbd>M</kbd> <kbd>S</kbd> <kbd>R</kbd></dd>
+        </div>
+        <div>
+          <dt>Search your library</dt>
+          <dd><kbd>/</kbd></dd>
+        </div>
+        <div>
+          <dt>Show shortcuts</dt>
+          <dd><kbd>?</kbd></dd>
+        </div>
+        <div>
+          <dt>Move track (focus its grip)</dt>
+          <dd><kbd>Alt</kbd> + <kbd>↑ / ↓</kbd></dd>
+        </div>
+      </dl>
+      <p class="field-hint">
+        Shortcuts work while this tab is focused. Typing in a field won’t
+        interrupt playback.
+      </p>
+    </dialog>
+    <dialog id="info-dialog" class="modal">
+      <form id="info-form">
+        <div class="modal-heading">
+          <div>
+            <span class="eyebrow">THE DETAILS</span>
+            <h2>Track information</h2>
+          </div>
+          <button
+            type="button"
+            class="icon-button"
+            data-close
+            aria-label="Close"
+          >
+            <span data-icon="close"></span>
+          </button>
+        </div>
+        <label class="field-label" for="info-title">Title</label
+        ><input id="info-title" required maxlength="300" />
+        <div class="field-grid">
+          <div>
+            <label class="field-label" for="info-artist">Artist</label
+            ><input id="info-artist" maxlength="300" />
+          </div>
+          <div>
+            <label class="field-label" for="info-album">Album</label
+            ><input id="info-album" maxlength="300" />
           </div>
         </div>
-        <img
-          src="./images/commonicons/fullscreenicon.svg"
-          alt="sound icon"
-          width="16"
-          height="16"
-          class="mx-2 opacity-50 hover:opacity-100"
-        />
+        <p id="info-source" class="source-text"></p>
+        <div class="order-actions">
+          <span>Playlist position</span
+          ><button type="button" class="button subtle small" id="move-up">
+            <span data-icon="up"></span>Move up</button
+          ><button type="button" class="button subtle small" id="move-down">
+            <span data-icon="down"></span>Move down
+          </button>
+        </div>
+        <p class="form-error" id="info-error" role="alert"></p>
+        <div class="modal-actions split">
+          <button type="button" class="button danger" id="remove-track">
+            <span data-icon="trash"></span>Remove</button
+          ><button type="submit" class="button primary">Save changes</button>
+        </div>
+      </form>
+    </dialog>
+    <dialog id="remove-dialog" class="modal compact">
+      <div class="modal-heading">
+        <h2>Remove this track?</h2>
+        <button class="icon-button" data-close aria-label="Close">
+          <span data-icon="close"></span>
+        </button>
       </div>
-    </div>
-    <script src="jsmediatags.min.js"></script>
-    <script src="script.js"></script>
+      <p id="remove-description"></p>
+      <div class="modal-actions">
+        <button class="button subtle" data-close>Keep track</button
+        ><button class="button danger" id="confirm-remove">Remove track</button>
+      </div>
+    </dialog>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <div id="announcer" class="sr-only" aria-live="polite"></div>
+    <audio id="audio-player" preload="metadata"></audio>
   </body>
 </html>
